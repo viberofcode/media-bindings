@@ -1,8 +1,10 @@
 # Media Key Bindings
 
 Media Key Bindings is a Firefox extension that adds keyboard controls and
-popup controls for HTML5 videos. It is intended to work across video sites
-such as YouTube and Reddit, including players hosted in supported frames.
+popup controls for HTML5 videos. It also scales images opened directly in a
+new tab to fill the viewport without distorting their aspect ratio. It is
+intended to work across video sites such as YouTube and Reddit, including
+players hosted in supported frames.
 
 ## Features
 
@@ -14,20 +16,23 @@ such as YouTube and Reddit, including players hosted in supported frames.
 - Toggle fullscreen with `F`
 - Step by one 30 FPS frame with `,` and `.`
 - Adjust playback speed with `-`, `=`, and `` ` `` to return to normal
-- View the current video time in the popup
+- View the current video time, duration, playback speed, and percentage in the popup
 - Enable looping and select independent loop start and end points with wrap around
+- Scale directly opened images and videos muted, looping, and full size
 
 Open the extension popup to:
 
-- See the current video time.
+- See the current video time, duration, playback speed, and percentage.
 - Turn looping on or off.
 - Set the loop start and end positions with the sliders.
+- Set either loop position to the video's current time.
 - Trigger any of the supported media controls by clicking its key.
 
 
 ## Project structure
 
 - `manifest.json` — Firefox extension metadata and content-script registration.
+- `defaults.js` — Scaling for images and videos opened directly in a tab.
 - `content.js` — Video discovery, keyboard handling, looping, and runtime
   message handling.
 - `popup.html` — Popup structure and control labels.
@@ -76,4 +81,3 @@ AI coding assistants working on this project should:
 6. Update directly related documentation and test the smallest relevant
    surface after changes.
 7. Never commit secrets, generated artifacts, or unrelated formatting changes.
-

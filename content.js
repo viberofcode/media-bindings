@@ -156,6 +156,9 @@
     return {
       currentTime: video.currentTime,
       duration: Number.isFinite(video.duration) ? video.duration : undefined,
+      playbackRate: Number.isFinite(video.playbackRate)
+        ? video.playbackRate
+        : undefined,
       loop: settings?.enabled || video.loop,
       loopTime: settings?.time || 0,
       loopEndTime: settings?.endTime ?? video.duration
@@ -260,6 +263,9 @@
 
     selectedVideo = video;
     const settings = getLoopSettings(video);
+    if (video.loop && !settings.enabled) {
+      setCustomLoop(video, true);
+    }
     settings.time = Math.max(0, Math.min(video.duration, time));
 
     return {
@@ -276,6 +282,9 @@
 
     selectedVideo = video;
     const settings = getLoopSettings(video);
+    if (video.loop && !settings.enabled) {
+      setCustomLoop(video, true);
+    }
     settings.endTime = Math.max(0, Math.min(video.duration, time));
 
     return {

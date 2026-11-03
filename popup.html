@@ -9,21 +9,30 @@
   <body>
     <main>
       <h1>Media Key Bindings</h1>
-      <p class="hint">Use these keys while watching a video.</p>
-      <p class="video-time">Current time: <span id="video-time">Unavailable</span></p>
+      <p class="video-time">
+        <span class="video-time-label">Current time:</span>
+        <span class="video-time-value">(<span id="video-percent">Unavailable</span>)
+          <span id="video-time">Unavailable</span></span>
+        <span class="video-time-label">Duration:</span>
+        <span class="video-time-value" id="video-duration">Unavailable</span>
+        <span class="video-time-label">Speed:</span>
+        <span class="video-time-value" id="video-speed">Unavailable</span>
+      </p>
       <section class="loop-controls" aria-labelledby="loop-controls-title">
         <div class="loop-controls-header">
-          <h2 id="loop-controls-title">Loop range</h2>
+          <h2 id="loop-controls-title">Loop</h2>
           <button id="video-loop" type="button" disabled><span id="video-loop-state">Unavailable</span></button>
         </div>
         <label class="loop-time" for="loop-time">
           <span>Start</span>
-          <output id="loop-time-value">Unavailable</output>
+          <input id="loop-time-value" class="loop-time-value" type="text" inputmode="decimal" value="Unavailable" aria-label="Loop start time" disabled>
+          <button id="loop-time-now" class="loop-time-now" type="button" disabled>Now</button>
           <input id="loop-time" type="range" min="0" max="0" step="0.1" value="0" disabled>
         </label>
         <label class="loop-time" for="loop-end-time">
           <span>End</span>
-          <output id="loop-end-time-value">Unavailable</output>
+          <input id="loop-end-time-value" class="loop-time-value" type="text" inputmode="decimal" value="Unavailable" aria-label="Loop end time" disabled>
+          <button id="loop-end-time-now" class="loop-time-now" type="button" disabled>Now</button>
           <input id="loop-end-time" type="range" min="0" max="0" step="0.1" value="0" disabled>
         </label>
       </section>

@@ -1,10 +1,16 @@
 :root {
   color-scheme: light dark;
   font: 14px system-ui, sans-serif;
+  --accent: #3978b8;
+  --accent-strong: #28639f;
+  --control-border: #b8c0ca;
+  --control-background: #fff;
+  --panel-background: #f5f7fa;
 }
 
 body {
   width: 320px;
+  min-height: 640px;
   margin: 0;
   color: #222;
   background: #fff;
@@ -17,6 +23,7 @@ main {
 h1 {
   margin: 0;
   font-size: 18px;
+  text-align: center;
 }
 
 .hint {
@@ -25,17 +32,33 @@ h1 {
 }
 
 .video-time {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 8px;
   margin: 0 0 4px;
   font-variant-numeric: tabular-nums;
 }
 
+.video-time-label {
+  text-align: left;
+}
+
+.video-time-value {
+  text-align: right;
+}
+
 .loop-controls button {
-  min-width: 62px;
-  padding: 2px 6px;
-  border: 1px solid #aaa;
-  border-radius: 3px;
+  min-width: 64px;
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 1px solid var(--control-border);
+  border-radius: 6px;
   color: #222;
-  background: #f2f2f2;
+  background: var(--control-background);
+  font: inherit;
+  font-weight: 600;
+  transition: border-color 120ms ease, background-color 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .loop-controls button:not(:disabled) {
@@ -85,15 +108,23 @@ button:hover kbd {
 }
 
 .loop-controls button:not(:disabled):hover {
-  background: #dceeff;
+  border-color: var(--accent);
+  background: #e8f2ff;
+}
+
+.loop-controls button:focus-visible,
+.loop-time input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .loop-controls {
   margin: 0 0 16px;
-  padding: 12px;
-  border: 1px solid #d5d5d5;
-  border-radius: 8px;
-  background: #f7f7f7;
+  padding: 14px;
+  border: 1px solid #d5dce5;
+  border-radius: 10px;
+  background: var(--panel-background);
+  box-shadow: 0 2px 6px rgb(25 45 70 / 8%);
 }
 
 .loop-controls h2 {
@@ -111,8 +142,11 @@ button:hover kbd {
 }
 
 .loop-time {
-  display: block;
-  margin: 0 0 12px;
+  display: grid;
+  grid-template-columns: 1fr 68px auto;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 14px;
   color: #555;
   font-size: 13px;
   font-weight: 600;
@@ -122,47 +156,135 @@ button:hover kbd {
   margin-bottom: 0;
 }
 
-.loop-time output {
-  float: right;
+.loop-time input.loop-time-value {
+  width: 68px;
+  box-sizing: border-box;
+  min-height: 28px;
+  padding: 4px 7px;
+  border: 1px solid var(--control-border);
+  border-radius: 6px;
   color: #222;
+  background: var(--control-background);
+  font: inherit;
   font-variant-numeric: tabular-nums;
   font-weight: 500;
+  text-align: right;
+  cursor: text;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
 }
 
-.loop-time input {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 8px;
-  accent-color: #3978b8;
+.loop-time-now {
+  min-width: 44px !important;
+  min-height: 28px !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  color: #222;
+}
+
+.loop-time-now:not(:disabled) {
   cursor: pointer;
 }
 
+.loop-time input {
+  accent-color: var(--accent);
+}
+
+.loop-time input[type="range"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin: 3px 0 0;
+  height: 18px;
+  appearance: none;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.loop-time input[type="range"]::-webkit-slider-runnable-track {
+  height: 5px;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.loop-time input[type="range"]::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -5.5px;
+  appearance: none;
+  border: 2px solid var(--control-background);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 1px 3px rgb(20 40 60 / 35%);
+}
+
+.loop-time input[type="range"]::-moz-range-track {
+  height: 5px;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.loop-time input[type="range"]::-moz-range-progress {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.loop-time input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--control-background);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 1px 3px rgb(20 40 60 / 35%);
+}
+
+.loop-time input[type="range"]:hover:not(:disabled)::-webkit-slider-thumb,
+.loop-time input[type="range"]:focus-visible::-webkit-slider-thumb {
+  background: var(--accent-strong);
+}
+
+.loop-time input[type="range"]:hover:not(:disabled)::-moz-range-thumb,
+.loop-time input[type="range"]:focus-visible::-moz-range-thumb {
+  background: var(--accent-strong);
+}
+
 .loop-time input:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.loop-time input.loop-time-value:disabled {
   cursor: default;
 }
 
 @media (prefers-color-scheme: dark) {
   .loop-controls button {
     color: #eee;
-    background: #333;
+    background: #333a43;
   }
 
   .loop-controls button:not(:disabled):hover {
+    border-color: #78b5ef;
     background: #264968;
   }
 
   .loop-controls {
-    border-color: #444;
-    background: #2b2b2b;
+    --control-border: #596574;
+    --control-background: #333a43;
+    --panel-background: #292f37;
+    border-color: #48515d;
   }
 
   .loop-time {
     color: #bbb;
   }
 
-  .loop-time output {
+  .loop-time input.loop-time-value {
     color: #eee;
+  }
+
+  .loop-time input[type="range"]::-webkit-slider-runnable-track,
+  .loop-time input[type="range"]::-moz-range-track {
+    background: #596574;
   }
 }
 
