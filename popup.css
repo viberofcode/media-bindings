@@ -24,6 +24,24 @@ h1 {
   color: #666;
 }
 
+.video-time {
+  margin: 0 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.loop-controls button {
+  min-width: 62px;
+  padding: 2px 6px;
+  border: 1px solid #aaa;
+  border-radius: 3px;
+  color: #222;
+  background: #f2f2f2;
+}
+
+.loop-controls button:not(:disabled) {
+  cursor: pointer;
+}
+
 dl {
   margin: 0;
 }
@@ -64,6 +82,88 @@ button {
 
 button:hover kbd {
   background: #dceeff;
+}
+
+.loop-controls button:not(:disabled):hover {
+  background: #dceeff;
+}
+
+.loop-controls {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid #d5d5d5;
+  border-radius: 8px;
+  background: #f7f7f7;
+}
+
+.loop-controls h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.loop-controls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.loop-time {
+  display: block;
+  margin: 0 0 12px;
+  color: #555;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.loop-time:last-child {
+  margin-bottom: 0;
+}
+
+.loop-time output {
+  float: right;
+  color: #222;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.loop-time input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  accent-color: #3978b8;
+  cursor: pointer;
+}
+
+.loop-time input:disabled {
+  cursor: default;
+}
+
+@media (prefers-color-scheme: dark) {
+  .loop-controls button {
+    color: #eee;
+    background: #333;
+  }
+
+  .loop-controls button:not(:disabled):hover {
+    background: #264968;
+  }
+
+  .loop-controls {
+    border-color: #444;
+    background: #2b2b2b;
+  }
+
+  .loop-time {
+    color: #bbb;
+  }
+
+  .loop-time output {
+    color: #eee;
+  }
 }
 
 #status {

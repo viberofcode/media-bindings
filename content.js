@@ -24,6 +24,7 @@
 
   let selectedVideo = null;
   let suppressSpaceKeyup = false;
+  const loopSettings = new WeakMap();
 
   function isEditableTarget(target) {
     return target instanceof HTMLInputElement ||
@@ -143,6 +144,145 @@
     });
   }
 
+  function getCurrentVideoTime() {
+    const video = getVideo();
+
+    if (!video || !Number.isFinite(video.currentTime)) {
+      return;
+    }
+
+    const settings = loopSettings.get(video);
+
+    return {
+      currentTime: video.currentTime,
+      duration: Number.isFinite(video.duration) ? video.duration : undefined,
+      loop: settings?.enabled || video.loop,
+      loopTime: settings?.time || 0,
+      loopEndTime: settings?.endTime ?? video.duration
+    };
+  }
+
+  function getLoopSettings(video) {
+    let settings = loopSettings.get(video);
+
+    if (!settings) {
+      settings = {
+        enabled: false,
+        time: 0,
+        endTime: Number.isFinite(video.duration) ? video.duration : 0,
+        timeupdateHandler: null,
+        endedHandler: null,
+        wrapped: false
+      };
+      loopSettings.set(video, settings);
+    }
+
+    return settings;
+  }
+
+  function setCustomLoop(video, enabled) {
+    const settings = getLoopSettings(video);
+    settings.enabled = enabled;
+    video.loop = false;
+
+    if (settings.timeupdateHandler) {
+      video.removeEventListener("timeupdate", settings.timeupdateHandler);
+      settings.timeupdateHandler = null;
+    }
+
+    if (settings.endedHandler) {
+      video.removeEventListener("ended", settings.endedHandler);
+      settings.endedHandler = null;
+    }
+
+    settings.wrapped = false;
+
+    if (enabled) {
+      settings.timeupdateHandler = () => {
+        if (video.paused || settings.endTime <= settings.time && !settings.wrapped) {
+          return;
+        }
+
+        if (video.currentTime < settings.endTime) {
+          return;
+        }
+
+        video.currentTime = settings.time;
+        settings.wrapped = false;
+        video.play().catch((error) => {
+          console.warn("Unable to resume the video from the custom loop.", error);
+        });
+      };
+      video.addEventListener("timeupdate", settings.timeupdateHandler);
+
+      settings.endedHandler = () => {
+        if (settings.time <= settings.endTime) {
+          video.currentTime = settings.time;
+          settings.wrapped = false;
+        } else {
+          video.currentTime = 0;
+          settings.wrapped = true;
+        }
+
+        video.play().catch((error) => {
+          console.warn("Unable to resume the video from the custom loop.", error);
+        });
+      };
+      video.addEventListener("ended", settings.endedHandler);
+    }
+  }
+
+  function toggleVideoLoop() {
+    const video = getVideo();
+
+    if (!video) {
+      return;
+    }
+
+    selectedVideo = video;
+    const settings = getLoopSettings(video);
+    setCustomLoop(video, !(settings.enabled || video.loop));
+    if (settings.enabled) {
+      video.currentTime = settings.time;
+    }
+
+    return {
+      loop: getLoopSettings(video).enabled
+    };
+  }
+
+  function setLoopTime(time) {
+    const video = getVideo();
+
+    if (!video || !Number.isFinite(video.duration) || !Number.isFinite(time)) {
+      return;
+    }
+
+    selectedVideo = video;
+    const settings = getLoopSettings(video);
+    settings.time = Math.max(0, Math.min(video.duration, time));
+
+    return {
+      loopTime: settings.time
+    };
+  }
+
+  function setLoopEndTime(time) {
+    const video = getVideo();
+
+    if (!video || !Number.isFinite(video.duration) || !Number.isFinite(time)) {
+      return;
+    }
+
+    selectedVideo = video;
+    const settings = getLoopSettings(video);
+    settings.endTime = Math.max(0, Math.min(video.duration, time));
+
+    return {
+      loopEndTime: settings.endTime
+    };
+  }
+
   function handleKey(key, event) {
     const normalizedKey = normalizeKey(key, event);
     const percentageKey = isPercentageKey(normalizedKey);
@@ -224,6 +364,46 @@
   function handleRuntimeMessage(message) {
     if (message.type === "media-key") {
       return handleKey(message.key);
+    }
+
+    if (message.type === "get-video-time") {
+      const currentVideoTime = getCurrentVideoTime();
+
+      if (currentVideoTime === undefined) {
+        return;
+      }
+
+      return Promise.resolve(currentVideoTime);
+    }
+
+    if (message.type === "toggle-video-loop") {
+      const videoLoop = toggleVideoLoop();
+
+      if (videoLoop === undefined) {
+        return;
+      }
+
+      return Promise.resolve(videoLoop);
+    }
+
+    if (message.type === "set-loop-time") {
+      const loopTime = setLoopTime(message.time);
+
+      if (loopTime === undefined) {
+        return;
+      }
+
+      return Promise.resolve(loopTime);
+    }
+
+    if (message.type === "set-loop-end-time") {
+      const loopEndTime = setLoopEndTime(message.time);
+
+      if (loopEndTime === undefined) {
+        return;
+      }
+
+      return Promise.resolve(loopEndTime);
     }
   }
 
