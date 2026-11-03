@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Media Key Bindings</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main>
+      <h1>Media Key Bindings</h1>
+      <p class="hint">Use these keys while watching a video.</p>
+      <dl>
+        <div><dt><button data-key=" "><kbd>Space</kbd></button> / <button data-key="k"><kbd>K</kbd></button></dt><dd>Play or pause</dd></div>
+        <div><dt><button data-key="m"><kbd>M</kbd></button></dt><dd>Mute or unmute</dd></div>
+        <div><dt><button data-key="j"><kbd>J</kbd></button></dt><dd>Rewind 5 seconds</dd></div>
+        <div><dt><button data-key="l"><kbd>L</kbd></button></dt><dd>Skip ahead 5 seconds</dd></div>
+        <div><dt><button data-key="ArrowLeft"><kbd>Left Arrow</kbd></button></dt><dd>Rewind 2 seconds</dd></div>
+        <div><dt><button data-key="ArrowRight"><kbd>Right Arrow</kbd></button></dt><dd>Skip ahead 2 seconds</dd></div>
+        <div><dt><button data-key="ArrowUp"><kbd>Up Arrow</kbd></button></dt><dd>Increase volume</dd></div>
+        <div><dt><button data-key="ArrowDown"><kbd>Down Arrow</kbd></button></dt><dd>Decrease volume</dd></div>
+        <div><dt>
+          <button data-key="0"><kbd>0</kbd></button>
+          <button data-key="1"><kbd>1</kbd></button>
+          <button data-key="2"><kbd>2</kbd></button>
+          <button data-key="3"><kbd>3</kbd></button>
+          <button data-key="4"><kbd>4</kbd></button>
+          <button data-key="5"><kbd>5</kbd></button>
+          <button data-key="6"><kbd>6</kbd></button>
+          <button data-key="7"><kbd>7</kbd></button>
+          <button data-key="8"><kbd>8</kbd></button>
+          <button data-key="9"><kbd>9</kbd></button>
+        </dt><dd>Seek to 0%–90%</dd></div>
+        <div><dt><button data-key="f"><kbd>F</kbd></button></dt><dd>Toggle fullscreen</dd></div>
+        <div><dt><button data-key=","><kbd>,</kbd></button></dt><dd>Advance one frame</dd></div>
+        <div><dt><button data-key="."><kbd>.</kbd></button></dt><dd>Rewind one frame</dd></div>
+        <div><dt><button data-key="-"><kbd>-</kbd></button></dt><dd>Decrease playback speed</dd></div>
+        <div><dt><button data-key="="><kbd>=</kbd></button></dt><dd>Increase playback speed</dd></div>
+        <div><dt><button data-key="`"><kbd>`</kbd></button></dt><dd>Reset playback speed</dd></div>
+      </dl>
+      <p id="status" role="status"></p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
