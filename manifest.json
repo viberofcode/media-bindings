@@ -24,8 +24,7 @@
         "required": [
           "none"
         ]
-      },
-      "strict_min_version": "140.0"
+      }
     }
   }
 }
