@@ -13,12 +13,16 @@ players hosted in supported frames.
 - Seek backward or forward with `J`, `L`, and the Left and Right arrow keys
 - Adjust volume with the Up and Down arrows
 - Seek to a percentage of the video with `0` through `9`
-- Toggle fullscreen with `F`
-- Step by one 30 FPS frame with `,` and `.`
+- Toggle fullscreen with `F`; recognized player controls stay within the
+  fullscreen player
+- Show or hide recognized custom player controls with `C`, or toggle native
+  controls when no custom controls are found
+- Step forward by one 30 FPS frame with `.` and backward with `,`
 - Adjust playback speed with `-`, `=`, and `` ` `` to return to normal
 - View the current video time, duration, playback speed, and percentage in the popup
 - Enable looping and select independent loop start and end points with wrap around
-- Scale directly opened images and videos muted, looping, and full size
+- Scale directly opened images and videos muted, looping, and full size; hide
+  controls by default on directly opened videos
 
 Open the extension popup to:
 

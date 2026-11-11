@@ -5,6 +5,22 @@
   const PLAYBACK_RATE_STEP = 0.1;
   const MIN_PLAYBACK_RATE = 0.1;
   const MAX_PLAYBACK_RATE = 3;
+  const CUSTOM_CONTROLS_SELECTORS = [
+    ".ytp-chrome-bottom",
+    ".ytp-gradient-bottom",
+    ".ytp-progress-bar-container",
+    ".vjs-control-bar",
+    ".vjs-progress-control",
+    ".plyr__controls",
+    ".plyr__progress",
+    ".jw-controlbar",
+    ".jw-controls",
+    ".jw-slider-time",
+    ".shaka-controls-container",
+    "shreddit-media-ui",
+    ".video-controls",
+    ".media-controls"
+  ];
   const KEY_BINDINGS = new Set([
     "j",
     "k",
@@ -17,6 +33,7 @@
     ",",
     ".",
     "f",
+    "c",
     "-",
     "=",
     "`"
@@ -25,6 +42,7 @@
   let selectedVideo = null;
   let suppressSpaceKeyup = false;
   const loopSettings = new WeakMap();
+  const customControlsStates = new WeakMap();
 
   function isEditableTarget(target) {
     return target instanceof HTMLInputElement ||
@@ -75,6 +93,131 @@
     return getVideoRoots().flatMap((root) => [...root.querySelectorAll("video")]);
   }
 
+  function getDescendantRoots(element) {
+    const roots = [element];
+
+    for (let index = 0; index < roots.length; index += 1) {
+      const root = roots[index];
+      if (root instanceof Element && root.shadowRoot) {
+        roots.push(root.shadowRoot);
+      }
+
+      root.querySelectorAll("*").forEach((descendant) => {
+        if (descendant.shadowRoot) {
+          roots.push(descendant.shadowRoot);
+        }
+      });
+    }
+
+    return roots;
+  }
+
+  function queryAllIncludingRoot(root, selector) {
+    const matches = root.querySelectorAll(selector);
+    if (root instanceof Element && root.matches(selector)) {
+      return [root, ...matches];
+    }
+
+    return [...matches];
+  }
+
+  function getCustomControls(video) {
+    let ancestor = video.parentElement || video.getRootNode().host;
+
+    while (ancestor) {
+      const roots = getDescendantRoots(ancestor);
+      const knownControls = roots.flatMap((root) => CUSTOM_CONTROLS_SELECTORS.flatMap(
+        (selector) => queryAllIncludingRoot(root, selector)
+      ));
+      const namedControls = roots.flatMap((root) => queryAllIncludingRoot(
+        root,
+        '[class], [id], [aria-label], [data-role], [data-testid], [part], [role="toolbar"]'
+      )).filter((element) => {
+        const label = [
+          element.getAttribute("class"),
+          element.id,
+          element.getAttribute("aria-label"),
+          element.getAttribute("data-role"),
+          element.getAttribute("data-testid"),
+          element.getAttribute("part"),
+          element.getAttribute("role")
+        ].filter((value) => typeof value === "string").join(" ");
+
+        return /controls?|toolbar|player[-_ ]?ui/i.test(label);
+      });
+      const candidates = [...new Set([...knownControls, ...namedControls])].filter(
+        (element) => element !== video
+      );
+      const controls = candidates.filter(
+        (element) => !candidates.some(
+          (other) => other !== element && element.contains(other)
+        )
+      );
+
+      if (controls.length > 0) {
+        return controls;
+      }
+
+      ancestor = ancestor.parentElement || ancestor.getRootNode().host || null;
+    }
+
+    return [];
+  }
+
+  function getComposedAncestors(element) {
+    const ancestors = [];
+    let ancestor = element;
+
+    while (ancestor) {
+      ancestors.push(ancestor);
+      ancestor = ancestor.parentElement || ancestor.getRootNode().host || null;
+    }
+
+    return ancestors;
+  }
+
+  function getFullscreenTarget(video) {
+    const controls = getCustomControls(video);
+    if (controls.length === 0) {
+      return video;
+    }
+
+    const controlAncestors = controls.map(
+      (control) => new Set(getComposedAncestors(control))
+    );
+    const target = getComposedAncestors(video).find(
+      (ancestor) => controlAncestors.every((ancestors) => ancestors.has(ancestor))
+    );
+
+    return target && target !== document.body && target !== document.documentElement
+      ? target
+      : video;
+  }
+
+  function toggleCustomControls(controls) {
+    controls.forEach((element) => {
+      let state = customControlsStates.get(element);
+
+      if (state?.hidden) {
+        if (state.display) {
+          element.style.setProperty("display", state.display, state.priority);
+        } else {
+          element.style.removeProperty("display");
+        }
+        state.hidden = false;
+        return;
+      }
+
+      state = {
+        display: element.style.getPropertyValue("display"),
+        priority: element.style.getPropertyPriority("display"),
+        hidden: true
+      };
+      customControlsStates.set(element, state);
+      element.style.setProperty("display", "none", "important");
+    });
+  }
+
   function getLargestVideo(videos) {
     return videos.sort((first, second) => {
       const firstRect = first.getBoundingClientRect();
@@ -122,7 +265,7 @@
   function toggleFullscreen(video) {
     const fullscreenAction = document.fullscreenElement
       ? document.exitFullscreen()
-      : video.requestFullscreen();
+      : getFullscreenTarget(video).requestFullscreen();
 
     fullscreenAction.catch((error) => {
       console.warn("Unable to toggle video fullscreen from the f key binding.", error);
@@ -326,9 +469,9 @@
     } else if (normalizedKey === "arrowdown") {
       video.volume = Math.max(0, video.volume - 0.1);
     } else if (normalizedKey === ",") {
-      seek(video, FRAME_DURATION);
-    } else if (normalizedKey === ".") {
       seek(video, -FRAME_DURATION);
+    } else if (normalizedKey === ".") {
+      seek(video, FRAME_DURATION);
     } else if (normalizedKey === "-") {
       setPlaybackRate(video, Math.max(
         MIN_PLAYBACK_RATE,
@@ -345,6 +488,13 @@
       video.currentTime = video.duration * Number(normalizedKey) / 10;
     } else if (normalizedKey === "f") {
       toggleFullscreen(video);
+    } else if (normalizedKey === "c") {
+      const customControls = getCustomControls(video);
+      if (customControls.length > 0) {
+        toggleCustomControls(customControls);
+      } else {
+        video.controls = !video.controls;
+      }
     } else if (playPauseKey) {
       togglePlayPause(video);
     }
