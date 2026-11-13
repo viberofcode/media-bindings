@@ -44,6 +44,21 @@ Open the extension popup to:
 - `popup.css` — Popup layout, controls, and light/dark theme styling.
 - `dial_icon.png` — Extension toolbar icon.
 
+## Build and package
+
+The extension has no compilation step. To test it locally, open `about:debugging`
+in Firefox, select **This Firefox**, choose **Load Temporary Add-on...**, and
+select `manifest.json`.
+
+Alternatively, package this extension with this command from the
+project directory:
+
+```sh
+zip -r media_bindings.zip manifest.json defaults.js content.js popup.html popup.js popup.css dial_icon.png README.md
+```
+
+Upload `media_bindings.zip` to the Firefox Add-ons developer hub.
+
 ## Contributing
 
 Before making a change:
