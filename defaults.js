@@ -3,7 +3,12 @@
 
   function observeMedia(applyStyles) {
     const observer = new MutationObserver(applyStyles);
-    observer.observe(document, { childList: true, subtree: true });
+    observer.observe(document, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["controls"]
+    });
     applyStyles();
   }
 
@@ -58,11 +63,10 @@
       video.style.setProperty("object-position", "center", "important");
       video.style.setProperty("position", "fixed", "important");
       video.style.setProperty("inset", "0", "important");
-      video.style.setProperty("width", "auto", "important");
-      video.style.setProperty("height", "auto", "important");
-      video.style.setProperty("max-width", "100vw", "important");
-      video.style.setProperty("max-height", "100vh", "important");
-      video.style.setProperty("margin", "auto", "important");
+      video.style.setProperty("width", "100vw", "important");
+      video.style.setProperty("height", "100vh", "important");
+      video.style.setProperty("max-width", "none", "important");
+      video.style.setProperty("max-height", "none", "important");
       video.muted = true;
       video.loop = true;
     };
