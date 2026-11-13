@@ -57,8 +57,6 @@ project directory:
 zip -r media_bindings.zip manifest.json defaults.js content.js popup.html popup.js popup.css dial_icon.png README.md
 ```
 
-Upload `media_bindings.zip` to the Firefox Add-ons developer hub.
-
 ## Contributing
 
 Before making a change:
